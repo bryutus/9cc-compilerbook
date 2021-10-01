@@ -42,8 +42,7 @@ bool consume(char *op) {
 }
 
 Token *consume_ident() {
-  for (char x = 'a'; x <= 'z'; x++) {
-    if (token->str[0] != x) continue;
+  if (token->kind == TK_IDENT) {
     Token *tok = token;
     token = token->next;
     return tok;
@@ -90,6 +89,24 @@ bool startswith(char *p, char *q) {
   return memcmp(p, q, strlen(q)) == 0;
 }
 
+// cが識別子の最初の文字として有効な場合はtrueを返す
+bool is_ident1(char c) {
+  return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') || c == '_';
+}
+
+// cが識別子の最初以外の文字として有効な場合はtrueを返す
+bool is_ident2(char c) {
+  return is_ident1(c) || ('0' <= c && c <= '9');
+}
+
+int len_ident(char *p) {
+  char *start = p;
+  do {
+    p++;
+  } while (is_ident2(*p));
+  return p - start;
+}
+
 // 入力文字列user_inputをトークナイズしてそれを返す
 Token *tokenize(char *p) {
   user_input = p;
@@ -125,8 +142,10 @@ Token *tokenize(char *p) {
       continue;
     }
 
-    if ('a' <= *p && *p <= 'z') {
-      cur = new_token(TK_IDENT, cur, p++, 1);
+    if (is_ident1(*p)) {
+      int len = len_ident(p);
+      cur = new_token(TK_IDENT, cur, p, len);
+      p += len;
       continue;
     }
 
