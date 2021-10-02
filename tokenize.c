@@ -47,8 +47,15 @@ Token *consume_ident() {
     token = token->next;
     return tok;
   }
-
   return NULL;
+}
+
+bool consume_return() {
+  if (token->kind != TK_RETURN) {
+    return false;
+  }
+  token = token->next;
+  return true;
 }
 
 // 次のトークンが期待している記号のときには、トークンを1つ読み進める。
@@ -118,6 +125,12 @@ Token *tokenize(char *p) {
     // 空白文字をスキップ
     if (isspace(*p)) {
       p++;
+      continue;
+    }
+
+    if (strncmp(p, "return", 6) == 0 && !is_ident(p[6])) {
+      cur = new_token(TK_RETURN, cur, p, 6);
+      p += 6;
       continue;
     }
 
