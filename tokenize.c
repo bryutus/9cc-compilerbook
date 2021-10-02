@@ -90,20 +90,20 @@ bool startswith(char *p, char *q) {
 }
 
 // cが識別子の最初の文字として有効な場合はtrueを返す
-bool is_ident1(char c) {
+bool is_ident_first(char c) {
   return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') || c == '_';
 }
 
 // cが識別子の最初以外の文字として有効な場合はtrueを返す
-bool is_ident2(char c) {
-  return is_ident1(c) || ('0' <= c && c <= '9');
+bool is_ident(char c) {
+  return is_ident_first(c) || ('0' <= c && c <= '9');
 }
 
 int len_ident(char *p) {
   char *start = p;
   do {
     p++;
-  } while (is_ident2(*p));
+  } while (is_ident(*p));
   return p - start;
 }
 
@@ -142,7 +142,7 @@ Token *tokenize(char *p) {
       continue;
     }
 
-    if (is_ident1(*p)) {
+    if (is_ident_first(*p)) {
       int len = len_ident(p);
       cur = new_token(TK_IDENT, cur, p, len);
       p += len;
